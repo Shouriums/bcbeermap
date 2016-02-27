@@ -61,6 +61,6 @@ app.get('/', function (req,res){
 	    	
 });
 
-server.listen(3000, function(){
+server.listen(PORT, function(){
 	console.log('Server running');
 });
