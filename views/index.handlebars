@@ -1,16 +1,38 @@
 <br><br><br><br>
+<div id="fb-root"></div>
+
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+
 <div class="row">
     <div id="map" class="col-md-6" style="height: 500px; width: 50%"></div>
      
-    <div id="info" class="col-md-5 col-md-offset-1 jumbotron">
+    <div id="info" class="col-md-5 col-md-offset-1 jumbotron" style="height: 500px" >
         <div id="head_info"><h2>Información</h2></div>
-        <div id="info_name"></div>
-        <div id="info_contacto" style="height: 130px;"></div>
-        <div id="info_cervezas"></div>
+        <div id="info_name"><h4>Nombre</h4> BC Beermap </div>
+        <div id="info_contacto">
+            <h4>Contacto</h4> 
+            <strong>Correo:</strong>contacto@bcbeermap.com<br>
+            <strong>Tel: </strong> (686)196-3552<br>
+            <strong>Facebook:</strong> <a href="http://www.facebook.com/bcbeermap" target="_blank">www.facebook.com/bcbeermap</a>
+                <br>
+            <div class="fb-like" data-href="http://www.facebook.com/bcbeermap" data-width="300" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
+
+        </div>
+         <h4> Instrucciones </h4> <h5> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h5>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12"> <h1> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h1> </div>
+    <div class="col-md-12">
+        <br><br>
+        <div id="info_cervezas"></div>
+    </div>
 </div>
 
 
@@ -57,13 +79,13 @@
 
                     if(jQuery.isEmptyObject(contacto)){
                         $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
-                        $("#info_contacto").html("<h4>Contacto:<br>No hay contacto sobre esta Cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a: <br><strong> contacto@bcbeermap.com</strong><br>");
+                        $("#info_contacto").html("<h4>Contacto:</h4>No hay contacto sobre esta Cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a: <br><strong> contacto@bcbeermap.com</strong><br>");
                         $("#info_cervezas").html("<h4>Crevezas</h4><hr>"+ string.join("<br>"));
 
                     }
                     else {
                         $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
-                        $("#info_contacto").html("<h4>Contacto: </h4>" + contacto.facebook + "<br>" + contacto.phone);
+                        $("#info_contacto").html("<h4>Contacto: </h4><a href="+contacto.facebook+" >" + contacto.facebook + "</a><br>" + contacto.phone);
                         $("#info_cervezas").html("<h4>Crevezas</h4><hr>"+ string.join("<br>")); 
                     }
                     
@@ -77,7 +99,6 @@
                             i++;
                         });
 
-                        console.log(bar.contacto);
                         if(jQuery.isEmptyObject(bar.contacto) || bar.contacto === null || bar.contacto === ""){
                             contacto = "No hay contacto sobre este bar. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>";
                         } else {
@@ -86,7 +107,7 @@
                         }
 
                         $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
-                        $("#info_contacto").html("<h4>Contacto: </h4>" + contacto +"<br>");
+                        $("#info_contacto").html("<h4>Contacto: </h4><a href='#''>" + contacto +"</a><br>");
                         $("#info_cervezas").html("<h4>Crevezas</h4>"+ string.join("<br>"));
  
                     }//iftypeof
@@ -94,14 +115,13 @@
                         if(jQuery.isEmptyObject(bar.contacto) || bar.contacto === null || bar.contacto === ""){
                             $("#info_contacto").html("<h4>Contacto: </h4> No hay contacto sobre este bar. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                         } else 
-                            $("#info_contacto").html("<h4>Contacto: </h4>" + JSON.parse(bar.contacto) +"<br>");
+                            $("#info_contacto").html("<h4>Contacto: </h4><a href="+JSON.parse(bar.contacto)+">" + JSON.parse(bar.contacto) +"</a><br>");
                         
 
                         $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
 
                         $("#info_cervezas").html("<h4>Crevezas</h4> No hay informacion sobre las cervezas de esta cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                     }
-                    console.log();
                 }//ifbar
                 
             });
