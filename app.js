@@ -14,6 +14,7 @@ var PORT = process.env.PORT || 3000;
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+app.use('/assets', express.static(__dirname + '/assets')); 
 
 app.get('/', function (req,res){
 
@@ -108,7 +109,7 @@ app.get('/cerveceria/:id', function (req,res){
 
 		}
 	}); //request
-		
+
 }); // get /cerveceria/:id
 
 server.listen(PORT, function(){
