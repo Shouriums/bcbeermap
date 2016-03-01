@@ -1,16 +1,24 @@
 <br><br><br><br>
-<div id="map" class="col-md-12" style="height: 500px"></div>
-<div id="brewerys" class="hidden">  {{brewerys}} </div>
-<div id="rendezvous" class="hidden">  {{rendezvous}} </div>
-<h2> 1 Click = Info -- 2 Clicks = Como llegar (Camino)</h2>
+<div class="row">
+    <div id="map" class="col-md-6" style="height: 500px; width: 50%"></div>
+     
+    <div id="info" class="col-md-5 col-md-offset-1 jumbotron">
+        <div id="head_info"><h2>Información</h2></div>
+        <div id="info_name"></div>
+        <div id="info_contacto" style="height: 130px;"></div>
+        <div id="info_cervezas"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12"> <h1> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h1> </div>
+</div>
+
 
     <script>
     var i = 0;
-    brews = $('#brewerys').html();
-    brews = JSON.parse(brews);
-    bars = $('#rendezvous').html();
-    bars = JSON.parse(bars);
-
+    brews = {{{brewerys}}};
+    bars = {{{rendezvous}}};
+    beers = {{{beers}}};
     function initMap() {
         var myLatLng = {lat: 32.624535, lng: -115.452180};
 
@@ -26,41 +34,104 @@
         
         var infowindow = new google.maps.InfoWindow();
        
-        function bindInfoWindow(marker, map, infowindow, html) {
-            marker.addListener('click', function() {
+        function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
+
+            marker.addListener('click', function(e) {
+                var i = 0
+                var string=[];
                 infowindow.setContent(html);
                 infowindow.open(map, this);
+
+                if(what === "brews"){
+
+                    beers.forEach(function (beer){
+                        var beer_id = parseInt(beer.brew);
+                        id = parseInt(brew.id);
+                        if(beer_id === id){
+                            string[i] = beer.name;
+                            i++ 
+                        }//beer_id
+                    });
+
+                    contacto = JSON.parse(brew.contacto);
+
+                    if(jQuery.isEmptyObject(contacto)){
+                        $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
+                        $("#info_contacto").html("<h4>Contacto:<br>No hay contacto sobre esta Cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a: <br><strong> contacto@bcbeermap.com</strong><br>");
+                        $("#info_cervezas").html("<h4>Crevezas</h4><hr>"+ string.join("<br>"));
+
+                    }
+                    else {
+                        $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
+                        $("#info_contacto").html("<h4>Contacto: </h4>" + contacto.facebook + "<br>" + contacto.phone);
+                        $("#info_cervezas").html("<h4>Crevezas</h4><hr>"+ string.join("<br>")); 
+                    }
+                    
+                }//if brews
+                else if(what === "bar"){ 
+                    if(typeof bar.beers[0] !== 'undefined' ){
+                        bar.beers.forEach(function (beer_id){
+                            if(beers[beer_id]){
+                                string[i] = beers[beer_id].name;
+                            }
+                            i++;
+                        });
+
+                        console.log(bar.contacto);
+                        if(jQuery.isEmptyObject(bar.contacto) || bar.contacto === null || bar.contacto === ""){
+                            contacto = "No hay contacto sobre este bar. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>";
+                        } else {
+                            contacto = JSON.parse(bar.contacto);
+                            contacto = contacto.facebook;
+                        }
+
+                        $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
+                        $("#info_contacto").html("<h4>Contacto: </h4>" + contacto +"<br>");
+                        $("#info_cervezas").html("<h4>Crevezas</h4>"+ string.join("<br>"));
+ 
+                    }//iftypeof
+                    else {
+                        if(jQuery.isEmptyObject(bar.contacto) || bar.contacto === null || bar.contacto === ""){
+                            $("#info_contacto").html("<h4>Contacto: </h4> No hay contacto sobre este bar. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
+                        } else 
+                            $("#info_contacto").html("<h4>Contacto: </h4>" + JSON.parse(bar.contacto) +"<br>");
+                        
+
+                        $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
+
+                        $("#info_cervezas").html("<h4>Crevezas</h4> No hay informacion sobre las cervezas de esta cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
+                    }
+                    console.log();
+                }//ifbar
+                
             });
-        } 
+        } //bindInfoWindow
+
 
         function routeToPlace(marker){
             marker.addListener('dblclick', function(e){
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                            var request = {
-                                destination: e.latLng,
-                                origin: geolocate,
-                                travelMode: google.maps.TravelMode.DRIVING
-                            };
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    var request = {
+                        destination: e.latLng,
+                        origin: geolocate,
+                        travelMode: google.maps.TravelMode.DRIVING
+                    };
 
-                            var directionsService = new google.maps.DirectionsService();
-                            directionsService.route(request, function(response, status) {
-                                if (status == google.maps.DirectionsStatus.OK) {
-                                  // Display the route on the map.
-                                    directionsDisplay.setDirections(response);
-                                }
-                            });
-                    })
-
-                    });//marker.addlistener
-        }
+                    var directionsService = new google.maps.DirectionsService();
+                    directionsService.route(request, function(response, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            // Display the route on the map.
+                            directionsDisplay.setDirections(response);
+                        }//if status
+                    }); //directionService
+                }); //navigator
+            });//marker.addlistener
+        }// routToPlace(marker)
 
         brews.forEach(function (brew){  
             if(brew.geo !== "" && brew.geo !==  null){
-                    var contentString = "<strong>Cerveceria: </strong>" + brew.name + "<br><strong>Direccion: </strong>" + brew.dir;
-
-                   infowindow.setContent(contentString);
-
+                    var contentString = "<strong>" + brew.name + " </strong>";
 
                     brew.geo = brew.geo.replace('lon', 'lng');
                     var marker = new google.maps.Marker({
@@ -69,7 +140,7 @@
                         title: brew.name
                     });
 
-                    bindInfoWindow(marker, map, infowindow, contentString); 
+                    bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews"); 
 
                     routeToPlace(marker);
 
@@ -92,7 +163,7 @@
                         title: bar.name
                     });
 
-                   bindInfoWindow(marker, map, infowindow, contentString); 
+                   bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar");
 
                    routeToPlace(marker);
 
