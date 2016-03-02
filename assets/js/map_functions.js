@@ -92,4 +92,72 @@ function routeToPlace(marker) {
 } // routToPlace(marker)
 
 
+function searchMarker(brews, bars, beers, all_markers)
+{
 
+    var i = 0;
+    var input = $('#search').val();
+    var all_names = [];
+    var search_results = [];
+    beers.forEach(function (beer){
+        all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew)};
+        brews.forEach(function (brew){
+            if(all_names[i].brew === brew.id)
+                all_names[i].brew = brew.name.toLowerCase();
+        });
+
+        i++;
+    });
+
+    brews.forEach(function (brew){
+        all_names[i] = { name:brew.name.toLowerCase(), type:"cervecerias"};
+        i++;
+    });
+
+    bars.forEach(function (bar){
+        all_names[i] = { name:bar.name.toLowerCase(), type:"bares" };
+        i++;
+    });
+
+
+   for(var i=0; i<all_names.length; i++) 
+        for(key in all_names[i]) 
+            if(all_names[i][key].indexOf(input)!=-1) {
+                search_results.push(all_names[i]);
+            }
+
+    keepMarkers(search_results, all_markers);
+    
+}//searchMarker
+
+function clearSearch(all_markers, map)
+{
+   $('#search').val("");
+   console.log(map);
+   for (var i = 0; i < all_markers.length; i++) {
+        all_markers[i].setMap(map);
+    }
+
+}
+
+
+function keepMarkers(res, markers){
+    var y = 0;
+    if(typeof res[0] === 'undefined')
+        console.log('No results for this search');
+    else {
+        var length = markers.length;
+        for(var i=0; i<length; i++){
+            for(var x=0; x<res.length; x++){
+                if(markers[i].title.toLowerCase() === res[x].brew){
+                    y++; console.log(markers[i].title);
+                }
+                    
+            }
+            if(y === 0)
+                markers[i].setVisible(false);
+            y=0;
+            //console.log(markers[i].title);   
+        }
+    }
+}   

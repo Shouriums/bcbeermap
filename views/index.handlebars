@@ -10,6 +10,13 @@
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+
+brews = {{{brewerys}}};
+bars = {{{rendezvous}}};
+beers = {{{beers}}};
+var all_markers = [];
+var map;
+
 </script>
 
 <div class="row">
@@ -26,8 +33,10 @@
                 <br>
             <div class="fb-like" data-href="http://www.facebook.com/bcbeermap" data-width="300" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
 
-        </div>
+    </div>
          <h4> Instrucciones </h4> <h5> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h5>
+         <input type="input" id="search" onchange="searchMarker(brews, bars, beers, all_markers)">
+         <input type="button" value="clear" onclick="clearSearch(all_markers, map)">
     </div>
 </div>
 <div class="row">
@@ -40,11 +49,9 @@
 
     <script>
     var i = 0;
-    brews = {{{brewerys}}};
-    bars = {{{rendezvous}}};
-    beers = {{{beers}}};
+    
     function initMap() {
-
+        
         var myLatLng = {
             lat: 32.624535,
             lng: -115.452180
@@ -75,7 +82,7 @@
                     position: JSON.parse(brew.geo),
                     title: brew.name
                 });
-
+                all_markers.push(marker);
                 bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews");
                 routeToPlace(marker);
 
@@ -94,7 +101,7 @@
                     position: JSON.parse(bar.geo),
                     title: bar.name
                 });
-
+                all_markers.push(marker);
                 if (typeof bar.beers[0] === 'undefined') {
                     marker.setZIndex(-10);
                 }
@@ -106,7 +113,7 @@
         }); //forEach
     } //initMap
 
-    
+   
 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtiIDqGxs79px1ximdYXxXUKZHkqm9WH8&callback=initMap"
