@@ -50,7 +50,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
                 }
 
                 $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
-                $("#logo").html("<h4>Logo:</h4><img style='height: 100px; width: auto;' src="+ brew.logo +">");
+                $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_contacto").html("<h4>Contacto: </h4>" + contacto + "<br>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr>" + string);
 
@@ -63,6 +63,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
 
 
                 $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
+                                $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr> No hay informacion sobre las cervezas de esta cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
             }
         } //ifbar
@@ -145,15 +146,44 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
         temp2 = [];
         i++;
     });
-
+       
    for(var i=0; i<all_names.length; i++) 
         for(key in all_names[i]) 
             if(all_names[i][key].indexOf(input)!=-1) {
-                
                 search_results.push(all_names[i]);
             }
 
     keepMarkers(search_results, all_markers, infowindow);
+
+    if(input === "cheves"){
+        all_names = [];
+        i = 0;
+        beers.forEach(function (beer){
+            all_names[i] = beer.name.toLowerCase();
+            i++;
+        });
+        $("#info_cervezas").html(all_names.join(" - ")); 
+    }
+
+    if(input === "cervecerias"){
+        all_names = [];
+        i = 0;
+        brews.forEach(function (brew){
+            all_names[i] = brew.name.toLowerCase();
+            i++;
+        });
+        $("#info_cervezas").html(all_names.join(" - ")); 
+    }
+
+    if(input === "bares"){
+        all_names = [];
+        i = 0;
+        bars.forEach(function (bar){
+            all_names[i] = bar.name.toLowerCase();
+            i++;
+        });
+        $("#info_cervezas").html(all_names.join(" - ")); 
+    }
 
      $('#search').keydown(function(e){
         if(e.keyCode == 8) {
@@ -183,10 +213,12 @@ function clearSearch(all_markers, map, infowindow)
         all_markers[i].setVisible(true);
     }
 
+    $('#search').focus();
+
 }
 
 
-function keepMarkers(res, markers, infowindow){
+function keepMarkers(res, markers){
     var y = 0;
 
     if(typeof res[0] === 'undefined' || $('#search').val() == ""){
