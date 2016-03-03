@@ -95,10 +95,14 @@ function routeToPlace(marker) {
 function searchMarker(brews, bars, beers, all_markers)
 {
 
+
     var i = 0;
-    var input = $('#search').val();
+    var input = $('#search').val().toLowerCase();
+    var temp = [];
+    var temp2 = [];
     var all_names = [];
     var search_results = [];
+
     beers.forEach(function (beer){
         all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew)};
         brews.forEach(function (brew){
@@ -115,27 +119,62 @@ function searchMarker(brews, bars, beers, all_markers)
     });
 
     bars.forEach(function (bar){
-        all_names[i] = { name:bar.name.toLowerCase(), type:"bares" };
+
+        if(typeof bar.beers[0] !== 'undefined' ){
+            
+            beers.forEach(function (beer){
+                for(var z =0; z<bar.beers.length; z++){
+                    if(bar.beers[z] === beer.id){
+                        temp.push(beer.name.toLowerCase());
+                    }
+                }
+            });
+            
+            all_names[i] = { name:bar.name.toLowerCase(), type:"bares", beers: temp.join(" "), brew: temp2 };
+            
+        } else {
+            all_names[i] = { name:bar.name.toLowerCase(), type:"bares", beers: "", brew: temp2 }; 
+        }
+        temp = [];
+        //temp2 = [];
         i++;
     });
-
 
    for(var i=0; i<all_names.length; i++) 
         for(key in all_names[i]) 
             if(all_names[i][key].indexOf(input)!=-1) {
+                
                 search_results.push(all_names[i]);
             }
 
     keepMarkers(search_results, all_markers);
+
+     $('#search').keydown(function(e){
+        if(e.keyCode == 8) {
+            var y = 0;
+            var length = all_markers.length;
+            for(var i=0; i<length; i++){
+            for(var x=0; x<search_results.length; x++){
+                if(all_markers[i].title.toLowerCase() === search_results[x].brew){
+                    y++;
+                }     
+            }
+            if(y !== 0)
+                all_markers[i].setVisible(true);
+            y=0;
+            //console.log(markers[i].title);   
+        }
+        }
+    });
+    
     
 }//searchMarker
 
 function clearSearch(all_markers, map)
 {
    $('#search').val("");
-   console.log(map);
    for (var i = 0; i < all_markers.length; i++) {
-        all_markers[i].setMap(map);
+        all_markers[i]
     }
 
 }
@@ -143,16 +182,19 @@ function clearSearch(all_markers, map)
 
 function keepMarkers(res, markers){
     var y = 0;
-    if(typeof res[0] === 'undefined')
+    if(typeof res[0] === 'undefined' || $('#search').val() == ""){
         console.log('No results for this search');
+        for (var i = 0; i < all_markers.length; i++) {
+            all_markers[i].setVisible(true);
+        }
+    }
     else {
         var length = markers.length;
         for(var i=0; i<length; i++){
             for(var x=0; x<res.length; x++){
-                if(markers[i].title.toLowerCase() === res[x].brew){
-                    y++; console.log(markers[i].title);
-                }
-                    
+                if(markers[i].title.toLowerCase() === res[x].brew || markers[i].title.toLowerCase() === res[x].name ){
+                    y++;
+                }     
             }
             if(y === 0)
                 markers[i].setVisible(false);

@@ -35,8 +35,8 @@ var map;
 
     </div>
          <h4> Instrucciones </h4> <h5> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h5>
-         <input type="input" id="search" onchange="searchMarker(brews, bars, beers, all_markers)">
-         <input type="button" value="clear" onclick="clearSearch(all_markers, map)">
+         <input type="input" id="search" oninput="searchMarker(brews, bars, beers, all_markers)" style="text-transform: lowercase;">
+         <input type="button" value="clear" onclick="clearSearch(all_markers)">
     </div>
 </div>
 <div class="row">
@@ -49,7 +49,6 @@ var map;
 
     <script>
     var i = 0;
-    
     function initMap() {
         
         var myLatLng = {
