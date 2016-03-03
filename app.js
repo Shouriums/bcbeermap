@@ -28,7 +28,8 @@ app.get('/', function (req,res){
 					geo: brew.Geolocation,
 					dir: brew.Direction,
 					id: brew.BreweryId,
-					contacto: brew.Contact
+					contacto: brew.Contact,
+					logo: brew.Logo
 				}
 				i++;
 			});

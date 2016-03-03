@@ -16,16 +16,17 @@ bars = {{{rendezvous}}};
 beers = {{{beers}}};
 var all_markers = [];
 var map;
+var infowindow;
 
 </script>
 
 <div class="row">
-    <div id="map" class="col-md-6" style="height: 500px; width: 50%"></div>
-     
-    <div id="info" class="col-md-5 col-md-offset-1 jumbotron" style="height: 500px" >
-        <div id="head_info"><h2>Información</h2></div>
+    <div id="map" class="col-md-6 col-sm-12" style="height: 530px;"></div>
+    <div id="info" class="col-md-5 col-md-offset-1 col-sm-12 text-center jumbotron" style="height: 530px;" >
+        <div id="head_info" style="margin-top:-7%"><h2>Información</h2></div>
         <div id="info_name"><h4>Nombre</h4> BC Beermap </div>
-        <div id="info_contacto">
+        <div id="logo" style="height:130px"><h4>Logo</h4><img style="height: 100px; width: auto;" src="../assets/img/bcbeermap.png"></div>
+        <div id="info_contacto" style="height: 120px">
             <h4>Contacto</h4> 
             <strong>Correo:</strong>contacto@bcbeermap.com<br>
             <strong>Tel: </strong> (686)196-3552<br>
@@ -34,13 +35,14 @@ var map;
             <div class="fb-like" data-href="http://www.facebook.com/bcbeermap" data-width="300" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
 
     </div>
-         <h4> Instrucciones </h4> <h5> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h5>
-         <input type="input" id="search" oninput="searchMarker(brews, bars, beers, all_markers)" style="text-transform: lowercase;">
-         <input type="button" value="clear" onclick="clearSearch(all_markers)">
+    <h4> Buscar en el Mapa </h4>
+         <input type="input" id="search" oninput="searchMarker(brews, bars, beers, all_markers, infowindow)" style="text-transform: lowercase;">
+         <input type="button" value="clear" onclick="clearSearch(all_markers, map)" >
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
+        <h4> Instrucciones </h4> <h5> 1 Click = Info -- 2 Clicks = Como llegar (Camino) </h5>
         <br><br>
         <div id="info_cervezas"></div>
     </div>
@@ -83,7 +85,7 @@ var map;
                 });
                 all_markers.push(marker);
                 bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews");
-                routeToPlace(marker);
+                routeToPlace(marker, directionsDisplay);
 
             } // if bar geo
         }); //forEach
@@ -106,7 +108,7 @@ var map;
                 }
 
                 bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar");
-                routeToPlace(marker);
+                routeToPlace(marker, directionsDisplay);
 
             } // if bar geo
         }); //forEach
