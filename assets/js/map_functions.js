@@ -12,14 +12,18 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
                 var beer_id = parseInt(beer.brew);
                 id = parseInt(brew.id);
                 if (beer_id === id) {
-                    string[i] = beer.name;
+                    string[i] = beer;
                     i++
                 } //beer_id
             });
 
+            
+
             contacto = JSON.parse(brew.contacto);
             $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
-            $("#info_cervezas").html("<h4>Crevezas</h4><hr>" + string);
+            $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
+            console.log(brew);
+            infoCervezas(string, brew);
 
             if (jQuery.isEmptyObject(contacto)|| bar.contacto === null || bar.contacto === "") {
                 $("#info_contacto").html("<h4>Contacto:</h4>No hay contacto sobre esta Cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a: <br><strong> contacto@bcbeermap.com</strong><br>");
@@ -37,7 +41,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
             if (typeof bar.beers[0] !== 'undefined') {
                 bar.beers.forEach(function(beer_id) {
                     if (beers[beer_id]) {
-                        string[i] = beers[beer_id].name;
+                        string[i] = beers[beer_id];
                     }
                     i++;
                 });
@@ -52,7 +56,8 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
                 $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
                 $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_contacto").html("<h4>Contacto: </h4>" + contacto + "<br>");
-                $("#info_cervezas").html("<h4>Crevezas</h4><hr>" + string);
+                $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
+                infoCervezas(string);
 
             } //iftypeof
             else {
@@ -131,8 +136,7 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
                                 if(Number(beer.brew) === brew.id)
                                     temp2.push(brew.name.toLowerCase());
                             });
-                        }
-                            
+                        }     
                     }
                 }
             });
@@ -190,18 +194,18 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
             var y = 0;
             var length = all_markers.length;
             for(var i=0; i<length; i++){
-            for(var x=0; x<search_results.length; x++){
-                if(all_markers[i].title.toLowerCase() === search_results[x].brew){
-                    y++;
-                }     
-            }
+                for(var x=0; x<search_results.length; x++){
+                    if(all_markers[i].title.toLowerCase() === search_results[x].brew){
+                        y++;
+                    }  //if all_markers   
+                }// for X
             if(y !== 0)
                 all_markers[i].setVisible(true);
             y=0;
             //console.log(markers[i].title);   
-        }
-        }
-    });
+            }//for I
+        }// if e
+    });// #search
     
     
 }//searchMarker
@@ -215,7 +219,7 @@ function clearSearch(all_markers, map, infowindow)
 
     $('#search').focus();
 
-}
+} //clearSearch
 
 
 function keepMarkers(res, markers){
@@ -225,22 +229,39 @@ function keepMarkers(res, markers){
         $("#info_cervezas").html("<p> No hay resultados sobre su busqueda. Si cree que es un error o una nueva cerveceria / bar / tienda que se quiere unir a nosotros favor de mandar correo a:<br> <strong> contacto@bcbeermap.com</strong>");
         for (var i = 0; i < all_markers.length; i++) {
             all_markers[i].setVisible(true);
-
-        }
-    }
+        }//for i
+    }// if typeof
     else {
         var length = markers.length;
         for(var i=0; i<length; i++){
             for(var x=0; x<res.length; x++){
                 if(markers[i].title.toLowerCase() === res[x].brew || markers[i].title.toLowerCase() === res[x].name ){
                     y++;
-                }     
-            }
+                }   //if markers  
+            }//for x
             if(y === 0){
                 markers[i].setVisible(false);
-            }
+            }//if y
                 
             y=0;
+        }//for i
+    }//else
+} //keep markers  
+
+
+function infoCervezas(beers){
+    var i=0;
+    //var request = require('request');
+    $("#info_cervezas").append("<div class='row'>");
+    beers.forEach(function (beer){
+        $("#info_cervezas").append("<div class='col-sm-2 text-center' > <img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.name + "</h4><div>");
+
+        i++;
+        if(i === 6){
+           $("#info_cervezas").append("</div>"); $("#info_cervezas").append("<br><div class='row'>");
+           i=0;
         }
-    }
-}   
+    $("#info_cervezas").append("</div>");
+    }); //foreach
+    
+} //infoCervezas
