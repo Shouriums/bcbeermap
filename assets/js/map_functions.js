@@ -1,3 +1,102 @@
+var map
+var directionsDisplay = "";
+var infowindow = "";
+    
+    function initMap() {
+        var i = 0;
+        var myLatLng = {
+            lat: 32.624535,
+            lng: -115.452180
+        };
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {
+                lat: 32.624535,
+                lng: -115.452180
+            },
+            scrollwheel: true,
+            zoom: 12
+        });
+
+        var directionsDisplay = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: true
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        brews.forEach(function(brew) {
+            if (brew.geo !== "" && brew.geo !== null) {
+                var contentString = "<strong>" + brew.name + " </strong>";
+
+                brew.geo = brew.geo.replace('lon', 'lng');
+                var marker = new google.maps.Marker({
+                    map: map,
+                    icon: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png',
+                    position: JSON.parse(brew.geo),
+                    title: brew.name
+                });
+                all_markers.push(marker);
+                bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews");
+                routeToPlace(marker, directionsDisplay);
+
+            } // if bar geo
+        }); //forEach
+
+        bars.forEach(function(bar) {
+            if (bar.geo !== "" && bar.geo !== "{}" && bar.geo !== null) {
+                var contentString = "<strong>Lugar: </strong>" + bar.name;
+
+                infowindow.setContent(contentString);
+                bar.geo = bar.geo.replace('lon', 'lng');
+                var marker = new google.maps.Marker({
+                    map: map,
+                    icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                    position: JSON.parse(bar.geo),
+                    title: bar.name
+                });
+                all_markers.push(marker);
+                if (typeof bar.beers[0] === 'undefined') {
+                    marker.setZIndex(-10);
+                }
+
+                bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar");
+                routeToPlace(marker, directionsDisplay);
+            } // if bar geo
+        }); //forEach
+
+        $("#clear").click(function(){
+            console.log("click");
+           clearSearch(all_markers, map, directionsDisplay);
+        });
+
+        $("#search").keyup(function (){
+            searchMarker(brews, bars, beers, all_markers, infowindow)
+        });
+
+         navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var infowindow2 = new google.maps.InfoWindow();
+            infowindow2.setContent("Aqui Estoy");
+            var marker2 = new google.maps.Marker({
+                map: map,
+                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                position: geolocate,
+                title: "Aqui Estoy"
+            });
+
+            marker2.addListener('mouseover', function() {
+                infowindow2.open(map, marker2);
+            });
+            marker2.addListener('mouseout', function() {
+                    infowindow2.close();
+            });
+        });
+
+
+    } //initMap
+
+
 function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
 
     marker.addListener('click', function(e) {
@@ -17,12 +116,9 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
                 } //beer_id
             });
 
-            
-
             contacto = JSON.parse(brew.contacto);
             $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
             $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
-            console.log(brew);
             infoCervezas(string, brew);
 
             if (jQuery.isEmptyObject(contacto)|| bar.contacto === null || bar.contacto === "") {
@@ -78,7 +174,9 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
 
 
 function routeToPlace(marker, directionsDisplay) {
+
     marker.addListener('dblclick', function(e) {
+
         navigator.geolocation.getCurrentPosition(function(position) {
             var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             var request = {
@@ -92,6 +190,7 @@ function routeToPlace(marker, directionsDisplay) {
                 if (status == google.maps.DirectionsStatus.OK) {
                     // Display the route on the map.
                     directionsDisplay.setDirections(response);
+
                 } //if status
             }); //directionService
         }); //navigator
@@ -108,6 +207,7 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
     var temp2 = [];
     var all_names = [];
     var search_results = [];
+    infowindow.close();
     beers.forEach(function (beer){
         all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew)};
         brews.forEach(function (brew){
@@ -210,14 +310,17 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
     
 }//searchMarker
 
-function clearSearch(all_markers, map, infowindow)
+function clearSearch(all_markers, map, directionsDisplay)
 {
    $('#search').val("");
+   //directionsDisplay.setMap(null);
    for (var i = 0; i < all_markers.length; i++) {
         all_markers[i].setVisible(true);
     }
-
+    map.setOptions({ zoom: 12});
     $('#search').focus();
+
+
 
 } //clearSearch
 

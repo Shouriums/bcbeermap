@@ -36,8 +36,8 @@ var infowindow;
 
     </div>
     <h4> Buscar en el Mapa </h4>
-         <input type="input" id="search" oninput="searchMarker(brews, bars, beers, all_markers, infowindow)" style="text-transform: lowercase;">
-         <input type="button" value="clear" onclick="clearSearch(all_markers, map)" >
+         <input type="input" id="search"  style="text-transform: lowercase;">
+         <input type="button" id="clear" value="clear">
     </div>
 </div>
 <div class="row">
@@ -50,75 +50,5 @@ var infowindow;
         <div id="info_cervezas"></div>
     </div>
 </div>
-
-
-    <script>
-    var i = 0;
-    function initMap() {
-        
-        var myLatLng = {
-            lat: 32.624535,
-            lng: -115.452180
-        };
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: {
-                lat: 32.624535,
-                lng: -115.452180
-            },
-            scrollwheel: true,
-            zoom: 12
-        });
-
-        var directionsDisplay = new google.maps.DirectionsRenderer({
-            map: map
-        });
-
-        var infowindow = new google.maps.InfoWindow();
-
-        brews.forEach(function(brew) {
-            if (brew.geo !== "" && brew.geo !== null) {
-                var contentString = "<strong>" + brew.name + " </strong>";
-
-                brew.geo = brew.geo.replace('lon', 'lng');
-                var marker = new google.maps.Marker({
-                    map: map,
-                    position: JSON.parse(brew.geo),
-                    title: brew.name
-                });
-                all_markers.push(marker);
-                bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews");
-                routeToPlace(marker, directionsDisplay);
-
-            } // if bar geo
-        }); //forEach
-
-        bars.forEach(function(bar) {
-            if (bar.geo !== "" && bar.geo !== "{}" && bar.geo !== null) {
-                var contentString = "<strong>Lugar: </strong>" + bar.name;
-
-                infowindow.setContent(contentString);
-                bar.geo = bar.geo.replace('lon', 'lng');
-                var marker = new google.maps.Marker({
-                    map: map,
-                    icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-                    position: JSON.parse(bar.geo),
-                    title: bar.name
-                });
-                all_markers.push(marker);
-                if (typeof bar.beers[0] === 'undefined') {
-                    marker.setZIndex(-10);
-                }
-
-                bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar");
-                routeToPlace(marker, directionsDisplay);
-
-            } // if bar geo
-        }); //forEach
-    } //initMap
-
-   
-
-    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtiIDqGxs79px1ximdYXxXUKZHkqm9WH8&callback=initMap"
     async defer></script>
