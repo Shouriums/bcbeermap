@@ -59,22 +59,24 @@ var infowindow = "";
                 if (typeof bar.beers[0] === 'undefined') {
                     marker.setZIndex(-10);
                 }
-
                 bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar", brews, bars);
                 routeToPlace(marker, directionsDisplay);
             } // if bar geo
         }); //forEach
 
         $("#clear").click(function(){
-            console.log("click");
-           clearSearch(all_markers, map, directionsDisplay);
+            clearSearch(all_markers, map, directionsDisplay);
         });
 
         $("#search").keyup(function (){
+
+            searchMarker(brews, bars, beers, all_markers, infowindow)
+        });
+
+        $("#search").select(function (){
             for (var i = 0; i < all_markers.length; i++) {
                 all_markers[i].setVisible(true);
             }
-            searchMarker(brews, bars, beers, all_markers, infowindow)
         });
 
          navigator.geolocation.getCurrentPosition(function(position) {
@@ -120,7 +122,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
             });
 
             contacto = JSON.parse(brew.contacto);
-            $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
+            $("#info_name").html("<h2>"+ brew.name +"</h2>");
             $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
             
 
@@ -130,11 +132,11 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
                 $("#info_contacto").html("<h4>Contacto: </h4><a href=" + contacto.facebook + " >" + contacto.facebook + "</a><br>" + contacto.phone);
             }
             if(brew.logo !== ""){
-                $("#logo").html("<h4>Logo:</h4><img style='height: 100px; width: auto;' src="+ brew.logo +">");
+                $("#logo").html("<img class='img-rounded' style='height: 100px; width: auto;' src="+ brew.logo +">");
             } else {
-                $("#logo").html("<h4>Logo:</h4>No hay logo para esta cerveceria. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
+                $("#logo").html("<img style='height: 50px; width: auto;' src='../assets/img/bcbeermap.png'><br><i>No hay logo para esta cerveceria. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</i></strong>");
             }
-
+            infoCervezas(string);
         } //if brews
         else if (what === "bar") {
             if (typeof bar.beers[0] !== 'undefined') {
@@ -142,7 +144,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
                     if (beers[beer_id]) {
                         all_brews.forEach(function (b){
                             if(b.id === parseInt(beers[beer_id].brew))
-                                beers[beer_id].brew = b.name;
+                                beers[beer_id].brewName = b.name;
                         });
 
                         string[i] = beers[beer_id];      
@@ -157,8 +159,8 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
                     contacto = "<a href='"+ contacto.facebook +"'>" + contacto.facebook + "</a>";
                 }
 
-                $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
-                $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
+                $("#info_name").html("<h2>"+ bar.name +"</h2>");
+                $("#logo").html("<img style='height: 50px; width: auto;' src='../assets/img/bcbeermap.png'><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_contacto").html("<h4>Contacto: </h4>" + contacto + "<br>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
             } //iftypeof
@@ -169,13 +171,12 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
                     $("#info_contacto").html("<h4>Contacto: </h4><a href=" + JSON.parse(bar.contacto) + ">" + JSON.parse(bar.contacto) + "</a><br>");
 
 
-                $("#info_name").html("<h4>Nombre: </h4>" + bar.name);
-                                $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
+                $("#info_name").html("<h2>Nombre: </h2>" + bar.name);
+                $("#logo").html("<img style='height: 50px; width: auto;' src='../assets/img/bcbeermap.png'><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr> No hay informacion sobre las cervezas de esta cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
             }
-        } //ifbar
-
             infoCervezas(string);
+        } //ifbar 
 
     });
 
@@ -259,7 +260,7 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
         temp2 = [];
         i++;
     });
-       
+
    for(var i=0; i<all_names.length; i++) 
         for(key in all_names[i]) 
             if(all_names[i][key].indexOf(input)!=-1) {
@@ -365,8 +366,8 @@ function infoCervezas(beers){
     var i=0;
     $("#info_cervezas").append("<div class='row'>");
     beers.forEach(function (beer){
-        if(typeof beer.brew === 'string')
-            $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'>  <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.brew + "</h4><h4><strong>"+ beer.name + "</strong></h4></a><div>");
+        if(beer.brewName)
+            $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'>  <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.brewName + "</h4><h4><strong>"+ beer.name + "</strong></h4></a><div>");
         else
             $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'> <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.name + "</h4></a><div>");
 
@@ -385,7 +386,6 @@ function modal(id, beers){
 
     beers.forEach(function (beer){
         if(beer.id ===  parseInt(id)){
-            console.log(beer);
             $("#modal_title").html("<h2>"+ beer.name +"</h2>");
             $("#beer_logo").html("<img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'>");
 

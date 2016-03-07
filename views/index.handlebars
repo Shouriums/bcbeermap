@@ -23,10 +23,9 @@ var infowindow;
 <div class="row">
     <div id="map" class="col-md-6 col-sm-12" style="height: 530px;"></div>
     <div id="info" class="col-md-5 col-md-offset-1 col-sm-12 text-center jumbotron" style="height: 530px;" >
-        <div id="head_info" style="margin-top:-7%"><h2>Información</h2></div>
-        <div id="info_name"><h4>Nombre</h4> BC Beermap </div>
-        <div id="logo" style="height:130px"><h4>Logo</h4><img style="height: 100px; width: auto;" src="../assets/img/bcbeermap.png"></div>
-        <div id="info_contacto" style="height: 120px">
+        <div id="info_name" style="margin-top:-7%"><h2>BC Beermap</h2></div>
+        <div id="logo" style="height:130px"><img style="height: 100px; width: auto;" src="../assets/img/bcbeermap.png"></div>
+        <div id="info_contacto" style="height: 120px; width:auto;">
             <h4>Contacto</h4> 
             <strong>Correo:</strong>contacto@bcbeermap.com<br>
             <strong>Tel: </strong> (686)196-3552<br>
@@ -36,8 +35,13 @@ var infowindow;
 
     </div>
     <h4> Buscar en el Mapa </h4>
-         <input type="input" id="search"  style="text-transform: lowercase;">
-         <input type="button" id="clear" value="clear">
+      <div class="input-group">
+          <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
+          <input type="input" id="search" class="form-control" style="text-transform: lowercase;">
+      </div>
+         <br>
+         <input type="button" class="btn btn-info" id="clear" value="Reiniciar Mapa">
+      
     </div>
 </div>
 <div class="row">
