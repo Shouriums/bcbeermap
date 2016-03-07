@@ -136,7 +136,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
             } else {
                 $("#logo").html("<img style='height: 50px; width: auto;' src='../assets/img/bcbeermap.png'><br><i>No hay logo para esta cerveceria. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</i></strong>");
             }
-            infoCervezas(string);
+            infoCervezas(string, what);
         } //if brews
         else if (what === "bar") {
             if (typeof bar.beers[0] !== 'undefined') {
@@ -175,7 +175,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
                 $("#logo").html("<img style='height: 50px; width: auto;' src='../assets/img/bcbeermap.png'><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr> No hay informacion sobre las cervezas de esta cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
             }
-            infoCervezas(string);
+            infoCervezas(string, what);
         } //ifbar 
 
     });
@@ -362,11 +362,11 @@ function keepMarkers(res, markers){
 } //keep markers  
 
 
-function infoCervezas(beers){
+function infoCervezas(beers, what){
     var i=0;
     $("#info_cervezas").append("<div class='row'>");
     beers.forEach(function (beer){
-        if(beer.brewName)
+        if(what === 'bar')
             $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'>  <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.brewName + "</h4><h4><strong>"+ beer.name + "</strong></h4></a><div>");
         else
             $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'> <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.name + "</h4></a><div>");
