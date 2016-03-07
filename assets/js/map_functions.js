@@ -37,7 +37,7 @@ var infowindow = "";
                     title: brew.name
                 });
                 all_markers.push(marker);
-                bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews");
+                bindInfoWindow(marker, map, infowindow, contentString, brew, "", "brews", brews, bars);
                 routeToPlace(marker, directionsDisplay);
 
             } // if bar geo
@@ -60,7 +60,7 @@ var infowindow = "";
                     marker.setZIndex(-10);
                 }
 
-                bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar");
+                bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar", brews, bars);
                 routeToPlace(marker, directionsDisplay);
             } // if bar geo
         }); //forEach
@@ -71,6 +71,9 @@ var infowindow = "";
         });
 
         $("#search").keyup(function (){
+            for (var i = 0; i < all_markers.length; i++) {
+                all_markers[i].setVisible(true);
+            }
             searchMarker(brews, bars, beers, all_markers, infowindow)
         });
 
@@ -89,7 +92,7 @@ var infowindow = "";
                 infowindow2.open(map, marker2);
             });
             marker2.addListener('mouseout', function() {
-                    infowindow2.close();
+                infowindow2.close();
             });
         });
 
@@ -97,7 +100,7 @@ var infowindow = "";
     } //initMap
 
 
-function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
+function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brews, all_bars) {
 
     marker.addListener('click', function(e) {
         var i = 0
@@ -119,9 +122,9 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
             contacto = JSON.parse(brew.contacto);
             $("#info_name").html("<h4>Nombre: </h4>" + brew.name);
             $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
-            infoCervezas(string, brew);
+            
 
-            if (jQuery.isEmptyObject(contacto)|| bar.contacto === null || bar.contacto === "") {
+            if (jQuery.isEmptyObject(contacto)|| contacto === null || contacto === "") {
                 $("#info_contacto").html("<h4>Contacto:</h4>No hay contacto sobre esta Cerveceria. Si estan interesados en dar mas información favor de contactarse con nosotros a: <br><strong> contacto@bcbeermap.com</strong><br>");
             } else {
                 $("#info_contacto").html("<h4>Contacto: </h4><a href=" + contacto.facebook + " >" + contacto.facebook + "</a><br>" + contacto.phone);
@@ -137,7 +140,12 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
             if (typeof bar.beers[0] !== 'undefined') {
                 bar.beers.forEach(function(beer_id) {
                     if (beers[beer_id]) {
-                        string[i] = beers[beer_id];
+                        all_brews.forEach(function (b){
+                            if(b.id === parseInt(beers[beer_id].brew))
+                                beers[beer_id].brew = b.name;
+                        });
+
+                        string[i] = beers[beer_id];      
                     }
                     i++;
                 });
@@ -153,8 +161,6 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
                 $("#logo").html("<h4>Logo:</h4><br>No hay logo para este bar. Si estan interesados mostrarlo favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>");
                 $("#info_contacto").html("<h4>Contacto: </h4>" + contacto + "<br>");
                 $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
-                infoCervezas(string);
-
             } //iftypeof
             else {
                 if (jQuery.isEmptyObject(bar.contacto) || bar.contacto === null || bar.contacto === "") {
@@ -169,7 +175,10 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what) {
             }
         } //ifbar
 
+            infoCervezas(string);
+
     });
+
 } //bindInfoWindow
 
 
@@ -354,17 +363,43 @@ function keepMarkers(res, markers){
 
 function infoCervezas(beers){
     var i=0;
-    //var request = require('request');
     $("#info_cervezas").append("<div class='row'>");
     beers.forEach(function (beer){
-        $("#info_cervezas").append("<div class='col-sm-2 text-center' > <img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.name + "</h4><div>");
+        if(typeof beer.brew === 'string')
+            $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'>  <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.brew + "</h4><h4><strong>"+ beer.name + "</strong></h4></a><div>");
+        else
+            $("#info_cervezas").append("<div class='col-sm-2 text-center' id="+ beer.id + " onclick='modal(this.id, beers);'> <a href='#' data-toggle='modal' data-target='#modal' style='text-decoration: none; color:black'><img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'><br><h4>"+ beer.name + "</h4></a><div>");
 
-        i++;
-        if(i === 6){
-           $("#info_cervezas").append("</div>"); $("#info_cervezas").append("<br><div class='row'>");
+        i++;    
+
+        if(i === 6){$("#info_cervezas").append("</div>"); $("#info_cervezas").append("<br><div class='row'>");
+           
            i=0;
         }
-    $("#info_cervezas").append("</div>");
+        $("#info_cervezas").append("</div>");
     }); //foreach
     
 } //infoCervezas
+
+function modal(id, beers){
+
+    beers.forEach(function (beer){
+        if(beer.id ===  parseInt(id)){
+            console.log(beer);
+            $("#modal_title").html("<h2>"+ beer.name +"</h2>");
+            $("#beer_logo").html("<img src='../assets/img/bcbeermap.png' style='height: 100px; width: auto;'>");
+
+            if(beer.alcohol !== null)
+                $("#body_info").html("<h4>Alcohol: "+ beer.alcohol +"%</h4>");
+            else
+                $("#body_info").html("<h4>Alcohol: 0%</h4>");
+
+            if(beer.desc !== null)
+                $("#body_info").append("<h4>Descripción</h4>" + beer.desc);
+            else
+               $("#body_info").append("<h4>Descripción</h4>No hay descripción para esta cerveza. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>"); 
+
+        }
+
+    });
+}
