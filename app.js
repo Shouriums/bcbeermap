@@ -44,6 +44,7 @@ app.get('/', function (req,res){
 					rendezvous[i] = {
 						name: rend.Name,
 						geo: rend.Geolocation,
+						geo2: rend.Geolocation2,
 						id: rend.RendezvousId,
 						contacto: rend.Contact,
 						beers: rend.Beers

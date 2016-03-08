@@ -46,21 +46,42 @@ var infowindow = "";
         bars.forEach(function(bar) {
             if (bar.geo !== "" && bar.geo !== "{}" && bar.geo !== null) {
                 var contentString = "<strong>"+ bar.name + "</strong>" ;
-
                 infowindow.setContent(contentString);
                 bar.geo = bar.geo.replace('lon', 'lng');
-                var marker = new google.maps.Marker({
-                    map: map,
-                    icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
-                    position: JSON.parse(bar.geo),
-                    title: bar.name
-                });
-                all_markers.push(marker);
-                if (typeof bar.beers[0] === 'undefined') {
-                    marker.setZIndex(-10);
-                }
-                bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar", brews, bars);
-                routeToPlace(marker, directionsDisplay);
+                bar.geo2 = bar.geo2.replace(/lon/g, 'lng');
+                bar.geo2 = JSON.parse(bar.geo2);
+                if(bar.geo2.length !== 1){
+                    bar.geo2.forEach(function (geo){
+                        var marker = new google.maps.Marker({
+                            map: map,
+                             icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                            position: geo,
+                            title: bar.name
+                        });
+                        all_markers.push(marker);
+                        if (typeof bar.beers[0] === 'undefined') {
+                            marker.setZIndex(-10);
+                        }
+
+                        bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar", brews, bars);
+                        routeToPlace(marker, directionsDisplay);
+                    });
+                } else {
+                   var marker = new google.maps.Marker({
+                        map: map,
+                        icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                        position: JSON.parse(bar.geo),
+                        title: bar.name
+                    }); 
+
+                    all_markers.push(marker);
+                        if (typeof bar.beers[0] === 'undefined') {
+                        marker.setZIndex(-10);
+                    }
+                   
+                    bindInfoWindow(marker, map, infowindow, contentString, "", bar, "bar", brews, bars);
+                    routeToPlace(marker, directionsDisplay);
+                } //else
             } // if bar geo
         }); //forEach
 
@@ -184,9 +205,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
 
 
 function routeToPlace(marker, directionsDisplay) {
-
     marker.addListener('dblclick', function(e) {
-
         navigator.geolocation.getCurrentPosition(function(position) {
             var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             var request = {
