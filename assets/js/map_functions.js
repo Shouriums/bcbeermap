@@ -123,7 +123,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
 
             contacto = JSON.parse(brew.contacto);
             $("#info_name").html("<h2>"+ brew.name +"</h2>");
-            $("#info_cervezas").html("<h4>Crevezas</h4><hr>");
+            $("#info_cervezas").html("<h4>Cervezas</h4><hr>");
             
 
             if (jQuery.isEmptyObject(contacto)|| contacto === null || contacto === "") {
