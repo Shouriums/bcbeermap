@@ -45,7 +45,7 @@ var infowindow = "";
 
         bars.forEach(function(bar) {
             if (bar.geo !== "" && bar.geo !== "{}" && bar.geo !== null) {
-                var contentString = "<strong>Lugar: </strong>" + bar.name;
+                var contentString = "<strong>"+ bar.name + "</strong>" ;
 
                 infowindow.setContent(contentString);
                 bar.geo = bar.geo.replace('lon', 'lng');
@@ -123,7 +123,7 @@ function bindInfoWindow(marker, map, infowindow, html, brew, bar, what, all_brew
 
             contacto = JSON.parse(brew.contacto);
             $("#info_name").html("<h2>"+ brew.name +"</h2>");
-            $("#info_cervezas").html("<h4>Cervezas</h4><hr>");
+            $("#info_cervezas").html("<h4 style='text-align:left; float:left;'>Cervezas  </h4>  <h6 style=' float:left; margin-top: 1.3%; margin-left:1%'>(dar click en los logos para ver mas información)</h6><br><hr>");
             
 
             if (jQuery.isEmptyObject(contacto)|| contacto === null || contacto === "") {
@@ -215,11 +215,16 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
     var input = $('#search').val().toLowerCase();
     var temp = [];
     var temp2 = [];
+    var temp3 = [];
     var all_names = [];
     var search_results = [];
     infowindow.close();
     beers.forEach(function (beer){
-        all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew)};
+        beer.type.toString();
+        if(typeof beer.type !== 'object')
+            all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew), style:beer.type.toLowerCase()};
+        else
+            all_names[i] = { name:beer.name.toLowerCase(), type:"cheves", brew: parseInt(beer.brew), style: "" };
         brews.forEach(function (brew){
             if(all_names[i].brew === brew.id)
                 all_names[i].brew = brew.name.toLowerCase();
@@ -227,7 +232,6 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
 
         i++;
     });
-
     brews.forEach(function (brew){
         all_names[i] = { name:brew.name.toLowerCase(), type:"cervecerias"};
         i++;
@@ -241,17 +245,20 @@ function searchMarker(brews, bars, beers, all_markers, infowindow)
                 for(var z =0; z<bar.beers.length; z++){
                     if(bar.beers[z] === beer.id){
                         temp.push(beer.name.toLowerCase());
-                        if(typeof temp2 !== 'undefined' ){
-                            brews.forEach(function (brew){
-                                if(Number(beer.brew) === brew.id)
-                                    temp2.push(brew.name.toLowerCase());
-                            });
-                        }     
-                    }
-                }
-            });
-            
-            all_names[i] = { name:bar.name.toLowerCase(), type:"bares", beers: temp.join(" "), brew: temp2.join(" ") };
+                        if(typeof beer.type !== 'object')
+                                temp3.push(beer.type.toLowerCase());
+                            else
+                                temp3.push("");
+                            if(typeof temp2 !== 'undefined' ){ 
+                                brews.forEach(function (brew){
+                                    if(Number(beer.brew) === brew.id)
+                                        temp2.push(brew.name.toLowerCase());
+                                });//brews foreach
+                            }//if temp2  
+                    }//if bar beers
+                } //beers foreach
+            }); // bars foreach
+            all_names[i] = { name:bar.name.toLowerCase(), type:"bares", beers: temp.join(" "), brew: temp2.join(" "), style: temp3.join(" ")};
             
         } else {
             all_names[i] = { name:bar.name.toLowerCase(), type:"bares", beers: "", brew: temp2.join(" ") }; 
@@ -393,13 +400,16 @@ function modal(id, beers){
                 $("#body_info").html("<h4>Alcohol: "+ beer.alcohol +"%</h4>");
             else
                 $("#body_info").html("<h4>Alcohol: 0%</h4>");
-
+            if(typeof beer.type !== 'object')
+                $('#body_info').append("<h4>Estilo: "+ beer.type +"</h4>");
+            else
+                $('#body_info').append("<h4>Estilo:</h4><h6>No hay estilo para esta cerveza. Contactanos <strong> contacto@bcbeermap.com</strong></h6>");
             if(beer.desc !== null)
                 $("#body_info").append("<h4>Descripción</h4>" + beer.desc);
             else
                $("#body_info").append("<h4>Descripción</h4>No hay descripción para esta cerveza. Si estan interesados en dar mas información favor de contactarse con nosotros a:<br> <strong> contacto@bcbeermap.com</strong>"); 
 
-        }
+        }//if beer.id
 
     });
 }

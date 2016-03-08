@@ -6,7 +6,8 @@ var server = require('http').Server(app);
 
 var urlBrewery = 'http://beermapapi.azurewebsites.net/api/brewery'; //
 var urlRendezvous = 'http://beermapapi.azurewebsites.net/api/rendezvous';
-var urlBeer = "http://beermapapi.azurewebsites.net/api/beer"
+var urlBeer = "http://beermapapi.azurewebsites.net/api/beer";
+var urlType = "http://beermapapi.azurewebsites.net/api/beer/type";
 
 var bIds =[];
 var i=0;
@@ -63,23 +64,43 @@ app.get('/', function (req,res){
 						type: beer.Types,
 						brew: beer.Breweries,
 						id: beer.BeerId
-					}
-					
+					} //beers
 				i++;
-				});
+				}); //foreach data
 		i=0;
-			
-			}
+
+		request(urlType, function (error, response, body){
+			if (!error && response.statusCode == 200){
+				var type = [];
+				data = JSON.parse(body);
+				beers.forEach(function (beer){
+					data.Data.forEach(function (type){
+					if(parseInt(beer.type) === type.BeerTypeId){
+						beer.type = type.Name; 
+					} //if parseint
+				});//foreach type
+				}); //forEach beers
+				
+				
+				
+			} //if error type
 
 			beers = JSON.stringify(beers);
 			rendezvous = JSON.stringify(rendezvous);
 			brewerys = JSON.stringify(brewerys);
 			res.render('index', {brewerys: brewerys, rendezvous: rendezvous, beers: beers});
 
-		});
+		}); // urlType
+					
+			
+			} // if error beers
+
+			
+
+		}); //request url Beer
 
 				
-			}
+			} //if error url rendezvous
 
 			
 		});
