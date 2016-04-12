@@ -48,9 +48,11 @@ var infowindow = "";
                 var contentString = "<strong>"+ bar.name + "</strong>" ;
                 infowindow.setContent(contentString);
                 bar.geo = bar.geo.replace('lon', 'lng');
-                bar.geo2 = bar.geo2.replace(/lon/g, 'lng');
-                bar.geo2 = JSON.parse(bar.geo2);
+
+            if(bar.geo2 !== null)
                 if(bar.geo2.length !== 1){
+                    bar.geo2 = bar.geo2.replace(/lon/g, 'lng');
+                    bar.geo2 = JSON.parse(bar.geo2);
                     bar.geo2.forEach(function (geo){
                         var marker = new google.maps.Marker({
                             map: map,
